@@ -1,0 +1,19 @@
+.activity-top{
+  display: flex;
+  align-items: inherit;
+}
+
+.activity-top button{
+  margin-right: 2vw;
+}
+
+.avatarActivity{
+  margin-top: 0.7vw;
+}
+
+.avatarActivity img{
+  background-color: #92B4EC;
+  border-radius: 50%;
+  height: 1.5vw;
+  width: 1.5vw;
+}

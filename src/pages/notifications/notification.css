@@ -1,0 +1,40 @@
+.notification-table{
+  padding: 2% 5%;
+}
+
+.notification-table table{
+  border: solid 1px #92B4EC;
+  font-size: 1vw;
+}
+
+.header-table{
+  color: #92B4EC;
+}
+
+.header-table th{
+  border-bottom: solid 1px #92B4EC;
+}
+
+.unopenned{
+  background-color: #ffe69a70;
+}
+
+.name-width{
+  min-width: 15vw;
+}
+
+tr{
+  border-right: solid 1px;
+}
+
+th{
+  text-align: left;
+  padding: 0.6vw;
+  border-right: solid 1px #92B4EC;
+  min-width: 10vw;
+  font-weight: 500;
+}
+
+th:last-child{
+  border-right: none;
+}

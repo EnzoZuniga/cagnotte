@@ -1,0 +1,57 @@
+.navBar{
+  background-color: #92B4EC;
+  float: left;
+  height: 100vh;
+  min-width: 20vw;
+  display: grid;
+  color: white;
+  grid-template-rows: 15% 85%;
+}
+
+.info{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5%;
+  line-height: 1.5vw;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 1.2vw;
+}
+
+.avatar{
+  background-color: #FFE69A;
+  min-width: 6vw;
+  min-height: 6vw;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar img{
+  height: 4vw;
+  width: 4vw;
+}
+
+.cloche img{
+  height: 1.5vw;
+  width: 1.5vw;
+}
+
+.nav{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.nav a{
+  text-decoration: none;
+  color: white;
+}
+
+.nav a:hover{
+  opacity: 0.5;
+  cursor: pointer;
+}

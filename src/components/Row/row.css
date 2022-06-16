@@ -1,0 +1,16 @@
+.row{
+  background-color: #FFE69A;
+  display: flex;
+  max-width: 45%;
+  justify-content: space-between;
+  padding: 2vw 4vw;
+  border-bottom: solid 1px;
+}
+
+.row:last-child{
+  border-bottom: none;
+}
+
+.user{
+  margin-right: 20vw;
+}
