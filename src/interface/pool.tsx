@@ -4,6 +4,13 @@ import IUser from "./user";
 
 interface IPool {
   poolId: number,
+  attributes:{
+    name: string,
+    totalDonation: number,
+    goal: number,
+    activity_code: number,
+  }
+  id?: number,
   name: string,
   totalDonation: number,
   goal: number,

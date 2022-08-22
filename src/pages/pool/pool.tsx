@@ -29,9 +29,9 @@ const fakeData : IDonation[] = [
   }
 ]
 
-const Pool = ({pool, setClose, activity}: {pool?: IPool,setClose: any, activity: IActivity}) => {
+const Pool = ({poolId, setClose, activity}: {poolId?: number,setClose: any, activity?: IActivity}) => {
 
-  const [donations, setDonations] = useState<IDonation[]>(pool?.donations || []);
+  const [donations, setDonations] = useState<IDonation[]>(null || []);
   // const [total, setTotal] = useState<number>(0);
 
   useEffect(() => {
@@ -52,17 +52,17 @@ const Pool = ({pool, setClose, activity}: {pool?: IPool,setClose: any, activity:
             <Button name="<"/>
           </div>
           <div className="title">
-            {activity.name} - {pool?.name}
+            {/* {activity?.name} - {pool?.name} */}
           </div>
         </div>
         <Button name="télécharger"/>
       </div>
       <div className="numbers">
         <div className="padding total">
-          {pool?.totalDonation}€
+          {/* {pool?.totalDonation}€ */}
         </div>
         <div className="padding goal">
-          Objectif: {pool?.goal}€
+          {/* Objectif: {pool?.goal}€ */}
         </div>
         <div className="separator"/>
       </div>

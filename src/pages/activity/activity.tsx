@@ -9,50 +9,41 @@ import "./activity.css";
 
 import IActivity from "../../interface/activity";
 import IPool from "../../interface/pool";
-
-const fakeData : IActivity[] = [
-  {
-    activityId : 1,
-    activityCode: 7674,
-    name: "Vacances scolaire",
-    admin: true,
-    pools: [
-      {
-        poolId: 1,
-        name: "Iphone",
-        totalDonation: 230,
-        goal: 280,
-        users: [
-          {
-            id: 1,
-            name: "Enzo",
-            lastname: "Zuniga",
-          }
-        ],
-      }
-    ],
-  }
-]
+import axios from "axios";
 
 const Activity = ({setClose, activityId}:{setClose: any, activityId?: number}) => {
 
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [poolToPass, setPoolToPass] = useState<IPool>();
-  const [activity, setActivity] = useState<IActivity>({
-    activityId: 0,
-    activityCode: 0,
-    name: "Bad connection",
-    admin: true,
-  });
+  const [poolToPass, setPoolToPass] = useState<number>();
+  const [sortedPools, setSortedPools] = useState<IPool[]>();
+  const [activity, setActivity] = useState<IActivity>();
+  const [pools, setPools] = useState<IPool[]>();
 
   useEffect(()=> {
-    //fetching with activityId
-    setActivity(fakeData[0])
-  }, [])
+    //Call api pour l'activité
+    if(!activity){
+      axios.get(`http://localhost:1337/api/activities/${activityId}`).then(response => {
+        setActivity(response.data.data)
+      });
+    }
+
+    //Call api pour les pools
+    if(!pools){
+      axios.get('http://localhost:1337/api/pools').then(response => {
+        setPools(response.data.data)
+      });
+    }
+
+    sortPools();
+  }, [activityId, activity])
+
+  const sortPools = () => {
+    return setSortedPools(pools?.filter((pool : IPool) => pool?.attributes?.activity_code == activity?.attributes.code));
+  }
 
   if(openModal){
     return(
-      <Pool activity={activity} setClose={setOpenModal} pool={poolToPass}/>
+      <Pool activity={activity} setClose={setOpenModal} poolId={poolToPass}/>
     );
   }else{
     return(
@@ -63,31 +54,31 @@ const Activity = ({setClose, activityId}:{setClose: any, activityId?: number}) =
               <Button name="<"/>
             </div>
             <div className="title">
-              {activity?.name} - #{activity.activityCode}
+              {activity?.attributes.name} - #{activity?.attributes.code}
             </div>
             <div className="avatarActivity">
               {
-                activity?.admin ? <img src={avatarImg} alt="avatar"/> : null
+                activity?.attributes.admin ? <img src={avatarImg} alt="avatar"/> : null
               }
             </div>
           </div>
           {
-            activity.admin? (
+            activity?.attributes.admin? (
               <Button name="créer"/>
             ) : null
           }
         </div>
         <div className="content">
             {
-              activity.pools?.map((pool: IPool) => {
+              sortedPools?.map((pool: IPool) => {
                 return (
-                  <div onClick={() => setPoolToPass(pool)}>
+                  <div key={pool.id} onClick={() => setPoolToPass(pool.id)}>
                     <Card
                       type="pool"
-                      name={pool.name}
+                      name={pool?.attributes?.name}
                       avatar={true}
-                      number={pool.totalDonation}
-                      objectif={pool.goal}
+                      number={pool?.attributes?.totalDonation}
+                      objectif={pool?.attributes?.goal}
                       setOpen={setOpenModal}
                     />
                   </div>

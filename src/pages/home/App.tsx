@@ -6,34 +6,37 @@ import Card from '../../components/card/Card';
 
 import Activity from '../activity/activity';
 import IActivity from '../../interface/activity';
-
-const fakeData : IActivity[] = [
-  {
-    activityId : 1,
-    activityCode: 7674,
-    name: "Vacances scolaire",
-    admin: true,
-    pools: [
-      {
-        poolId: 1,
-        name: "Iphone",
-        totalDonation: 230,
-        goal: 280,
-      }
-    ],
-  }
-]
+import IUser from '../../interface/user';
+import axios from 'axios';
 
 function App() {
 
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [activities, setActivities] = useState<IActivity[]>(fakeData);
+  const [user, setUser] = useState<IUser>();
+  const [sortedActivities, setSortedActivities] = useState<IActivity[]>();
+  const [activities, setActivities] = useState<IActivity[]>();
   const [activityId, setActivityId] = useState<number>();
   
   useEffect(() => {
     //fetch all activities with actual user
-    setActivities(fakeData);
-  }, [])
+    if (!user){
+      axios.get('http://localhost:1337/api/participants/1').then(response => {
+        setUser(response.data.data);
+      });
+    };
+
+    if(!activities){
+      axios.get('http://localhost:1337/api/activities').then(response => {
+        setActivities(response.data.data)
+      });
+    }
+
+    sortActivities()
+  }, [user, activities])
+
+  const sortActivities = () => {
+    return setSortedActivities(activities?.filter((activity : IActivity) => user?.attributes.followed_activity.codes.includes(activity.attributes.code)));
+  }
 
   if(openModal){
     return(
@@ -53,12 +56,12 @@ function App() {
         </div>
         <div className="content">
           {
-            activities.map((activity: IActivity) => {
+            sortedActivities?.map((activity: IActivity) => {
               return (
-                <div onClick={() => setActivityId(activity.activityId)}>
+                <div className='activity' key={activity.id} onClick={() => setActivityId(activity.id)}>
                   <Card
                     type="activity"
-                    name="Sortie vacances"
+                    name={activity.attributes?.name || ""}
                     avatar={true}
                     number={4}
                     setOpen={setOpenModal}
