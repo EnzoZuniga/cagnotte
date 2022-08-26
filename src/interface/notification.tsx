@@ -2,13 +2,17 @@ import React from "react";
 
 interface INotification {
   id: number,
-  createdAt: Date,
-  name: string,
-  lastname: string,
-  amount: number,
-  activityName: string,
-  poolName: string,
-  open: boolean,
+  attributes:{
+    createdAt: Date,
+    name: string,
+    lastname: string,
+    open: boolean,
+    message: string,
+    amount: number,
+    activity_name: string,
+    pool_name: string,
+    user_id: number,
+  }
 };
 
 export default INotification;

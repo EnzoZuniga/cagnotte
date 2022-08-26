@@ -2,9 +2,12 @@ import React from "react";
 
 interface IDonation {
   id: number,
-  somme: number,
-  name: string,
-  lastname: string,
+  attributes:{
+    somme: number,
+    giver_name: string,
+    giver_lastname: string,
+    pool_id: number,
+  }
 };
 
 export default IDonation;

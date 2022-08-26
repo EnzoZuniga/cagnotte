@@ -7,15 +7,10 @@ interface IUser {
   attributes:{
     name: string,
     lastname: string,
-    donations?: IDonation[],
     followed_activity: {
       "codes" : number[],
     },
-  },
-  name?: string,
-  lastname?: string,
-  adminActivity?: [],
-  donations?: IDonation[],
+  }
 }
 
 export default IUser;

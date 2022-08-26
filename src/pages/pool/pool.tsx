@@ -7,42 +7,44 @@ import IActivity from "../../interface/activity";
 import IPool from "../../interface/pool";
 import Row from "../../components/Row/row";
 import IDonation from "../../interface/donation";
+import axios from "axios";
 
-const fakeData : IDonation[] = [
-  {
-    id: 1,
-    name: "Enzo",
-    lastname: "Zuniga",
-    somme: 30,
-  },
-  {
-    id: 2,
-    name: "Enzo",
-    lastname: "Zuniga",
-    somme: 30,
-  },
-  {
-    id: 3,
-    name: "Enzo",
-    lastname: "Zuniga",
-    somme: 30,
-  }
-]
+const Pool = ({poolId, setClose, activity}: {poolId?: number, setClose: any, activity?: IActivity}) => {
 
-const Pool = ({poolId, setClose, activity}: {poolId?: number,setClose: any, activity?: IActivity}) => {
-
-  const [donations, setDonations] = useState<IDonation[]>(null || []);
-  // const [total, setTotal] = useState<number>(0);
+  const [donations, setDonations] = useState<IDonation[]>();
+  const [pool, setPool] = useState<IPool>();
+  const [sortedDonations, setSortedDonations] = useState<IDonation[]>();
+  const [total, setTotal] = useState<number>(0);
 
   useEffect(() => {
-    //fetch users with poolId
-    setDonations(fakeData)
-    // let totalSomme = 0;
-    // fakeData?.forEach((donation: IDonation) => {
-    //   totalSomme = totalSomme + donation.somme;
-    // });
-    // setTotal(totalSomme);
-  }, []);
+    //Call pool with ID
+    if(!pool){
+      axios.get(`http://localhost:1337/api/pools/${poolId}`).then(response => {
+        setPool(response.data.data)
+      });
+    }
+
+    //Call donations
+    if(!donations){
+      axios.get('http://localhost:1337/api/donations').then(response => {
+        setDonations(response.data.data)
+      });
+    }
+
+    sortDonations();
+
+    //initial total
+    let totalSomme = 0;
+    sortedDonations?.forEach((donation: IDonation) => {
+      totalSomme = totalSomme + donation.attributes.somme;
+    });
+    setTotal(totalSomme);
+  }, [donations, pool, poolId, total]);
+
+  //sort all donations by pool id
+  const sortDonations = () => {
+    return setSortedDonations(donations?.filter((donations : IDonation) => pool?.id === donations.attributes.pool_id));
+  }
 
   return(
     <div className="pool">
@@ -52,26 +54,26 @@ const Pool = ({poolId, setClose, activity}: {poolId?: number,setClose: any, acti
             <Button name="<"/>
           </div>
           <div className="title">
-            {/* {activity?.name} - {pool?.name} */}
+            {activity?.attributes.name} - {pool?.attributes.name}
           </div>
         </div>
         <Button name="télécharger"/>
       </div>
       <div className="numbers">
         <div className="padding total">
-          {/* {pool?.totalDonation}€ */}
+          {pool?.attributes.totalDonation}€
         </div>
         <div className="padding goal">
-          {/* Objectif: {pool?.goal}€ */}
+          Objectif: {pool?.attributes.goal}€
         </div>
         <div className="separator"/>
       </div>
       <div className="donations">
         <div className="table">
           {
-            donations.map((donation: IDonation) => {
+            donations?.map((donation: IDonation) => {
               return (
-                <Row name={donation.name} lastname={donation.lastname} donation={donation.somme} />
+                <Row name={donation.attributes.giver_name} lastname={donation.attributes.giver_lastname} donation={donation.attributes.somme} />
               )
             })
           }
