@@ -19,6 +19,7 @@ function App() {
   const [activities, setActivities] = useState<IActivity[]>();
   const [activityId, setActivityId] = useState<number>();
   const [displayCreateModal, setDisplayCreateModal] = useState<boolean>(false);
+  const [displayFollowModal, setDisplayFollowModal] = useState<boolean>(false);
   
   useEffect(() => {
     //fetch all activities with actual user
@@ -53,7 +54,7 @@ function App() {
             Activité(s)
           </div>
           <div className="buttons">
-            <div>
+            <div onClick={() => setDisplayFollowModal(true)}>
               <Button name="suivre"/>
             </div>
             <div onClick={() => setDisplayCreateModal(true)}>
@@ -84,10 +85,71 @@ function App() {
           </div>
           ) : null
         }
+        {
+          displayFollowModal === true ?(
+            <div className='createModal'>
+              <FollowModal setDisplayFollowModal={setDisplayFollowModal} userCodes={user?.attributes.followed_activity} activities={activities} userId={user?.id} />
+            </div>
+          ): null
+        }
       </div>
     );
   };  
 };
+
+const FollowModal = ({setDisplayFollowModal, userCodes, userId, activities}: {setDisplayFollowModal: any, userCodes?: number[], userId?: number, activities?: IActivity[]}) => {
+
+  const [codeActivite, setCodeActivite] = useState<number>();
+  const [showError, setShowError] = useState<boolean>();
+
+  const followCode = () => {
+    if(codeActivite !== (0 || undefined)){
+      const arrayActivities = activities?.map((activity: IActivity) => {
+         return activity.attributes.code === codeActivite ? true : false
+      });
+      
+      if(arrayActivities?.includes(true)){ 
+        if(userCodes?.includes(codeActivite)){
+          return window.location.href=''
+        }else{
+          userCodes?.push(codeActivite);
+          axios.put(`http://localhost:1337/api/participants/${userId}`, {
+            data:{
+              "followed_activity": userCodes
+            }
+          })
+          return window.location.href='';
+        }
+      }else{
+        setShowError(true);
+      }
+    }
+  }
+
+  return(
+    <div className='form_wrapper'>
+      <div className="field">
+        <label>Code Activité</label>
+        <input onChange={(e) => setCodeActivite(Number(e.target.value))} type="number" name="code" id="code" />
+      </div>
+      <div className="form_buttons">
+        <div onClick={() => followCode()}>
+          <Button name='Valider' />
+        </div>
+        <div onClick={() => setDisplayFollowModal(false)}>
+          <Button name='Annuler' />
+        </div>
+      </div>
+      {
+        showError ? (
+          <span>
+              Mauvais code
+          </span>
+        ) : null
+      }
+    </div>
+  )
+}
 
 const CreatModal = ({setDisplayCreateModal, activities, userId, userCodes, setActivities} : {setDisplayCreateModal: any, activities?: IActivity[], userId?: number, userCodes?: number[], setActivities: any}) => {
 
