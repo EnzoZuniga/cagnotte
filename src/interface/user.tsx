@@ -7,9 +7,7 @@ interface IUser {
   attributes:{
     name: string,
     lastname: string,
-    followed_activity: {
-      "codes" : number[],
-    },
+    followed_activity: number[],
   }
 }
 

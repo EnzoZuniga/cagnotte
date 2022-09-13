@@ -9,7 +9,6 @@ interface IActivity {
     code: number,
     name: string,
     admin: boolean,
-    userId: string,
   }
 };
 

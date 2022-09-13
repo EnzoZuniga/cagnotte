@@ -10,6 +10,7 @@ const Notification = () => {
   const [notifications, setNotifications] = useState<INotification[]>();
   const [user, setUser] = useState<IUser>();
   const [sortedNotifications, setSortedNotifications] = useState<INotification[]>();
+  const [openedNotification, setOpenedNotification] = useState<boolean>();
 
   useEffect(() => {
     if (!user){
@@ -25,32 +26,28 @@ const Notification = () => {
       });
     }
 
-    sortNotifications();
+    setSortedNotifications(notifications?.filter((notification : INotification) => notification?.attributes?.user_id === user?.id));
+
   }, [notifications, user])
 
-  const sortNotifications = () => {
-    return setSortedNotifications(notifications?.filter((notification : INotification) => notification?.attributes?.user_id === user?.id));
-  }
 
   const setOpenNotification = (notification: INotification) => {
     console.log("passe3")
     let notificationToPut = {
       data:{
-        attributes: {
-          open: true,
-          name: notification.attributes.name,
-          lastname: notification.attributes.lastname,
-          amount: notification.attributes.amount,
-          activity_name: notification.attributes.activity_name,
-          pool_name: notification.attributes.pool_name,
-          user_id: notification.attributes.user_id
-        }
+        open: true,
       }
     };
     console.log(notificationToPut)
-    // axios.put(`http://localhost:1337/api/notifications/${notification.id}`, notificationToPut);
+    axios.put(`http://localhost:1337/api/notifications/${notification.id}`, notificationToPut);
   };
-
+  
+  const openNotification = () => {
+    console.log("passe2")
+    sortedNotifications?.map((notification : INotification) => {
+      return setOpenNotification(notification)
+    })
+  }
   useEffect(() => {
     const timer = setTimeout(() => {
         openNotification();
@@ -58,13 +55,6 @@ const Notification = () => {
     }, 1500);
     return () => clearTimeout(timer);
   }, []);
-
-  const openNotification = () => {
-    console.log("passe2")
-    sortedNotifications?.map((notification : INotification) => {
-      return setOpenNotification(notification)
-    })
-  }
 
   return(
     <div className="App">
