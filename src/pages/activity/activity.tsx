@@ -18,6 +18,7 @@ const Activity = ({setClose, activityId}:{setClose: any, activityId?: number}) =
   const [sortedPools, setSortedPools] = useState<IPool[]>();
   const [activity, setActivity] = useState<IActivity>();
   const [pools, setPools] = useState<IPool[]>();
+  const [displayCreateModal, setDisplayCreateModal] = useState<boolean>(false);
 
   useEffect(()=> {
     //Call api pour l'activité
@@ -64,32 +65,88 @@ const Activity = ({setClose, activityId}:{setClose: any, activityId?: number}) =
           </div>
           {
             activity?.attributes.admin? (
-              <Button name="créer"/>
+              <div onClick={() => setDisplayCreateModal(true)}>
+                <Button name="créer"/>
+              </div>
             ) : null
           }
         </div>
         <div className="content">
-            {
-              sortedPools?.map((pool: IPool) => {
-                return (
-                  <div key={pool.id} onClick={() => setPoolToPass(pool.id)}>
-                    <Card
-                      type="pool"
-                      name={pool?.attributes?.name}
-                      avatar={true}
-                      number={pool?.attributes?.totalDonation}
-                      objectif={pool?.attributes?.goal}
-                      setOpen={setOpenModal}
-                    />
-                  </div>
-                )
-              })
-            }
+          {
+            sortedPools?.map((pool: IPool) => {
+              return (
+                <div key={pool.id} onClick={() => setPoolToPass(pool.id)}>
+                  <Card
+                    type="pool"
+                    name={pool?.attributes?.name}
+                    avatar={true}
+                    number={pool?.attributes?.totalDonation}
+                    objectif={pool?.attributes?.goal}
+                    setOpen={setOpenModal}
+                  />
+                </div>
+              )
+            })
+          }
+        </div>
+        {
+          displayCreateModal === true ?(
+          <div className='createModal'>
+            <CreatModal setDisplayCreateModal={setDisplayCreateModal} activity={activity}/>
           </div>
+          ) : null
+        }
       </div>
     )
   }
+}
 
+const CreatModal = ({setDisplayCreateModal, activity} : {setDisplayCreateModal: any, activity?: IActivity}) => {
+
+  const [cagnotteName, setCagnotteName] = useState<string>();
+  const [objectif, setObjectif] = useState<number>();
+
+  const postNewActivity = () => {
+    if(
+      (cagnotteName !== (null || ""))
+      && (objectif !== (null || 0))
+    ) {
+      axios.post('http://localhost:1337/api/pools', {
+        data: {
+          name: cagnotteName,
+          totalDonation: 0,
+          goal: objectif,
+          activity_code: activity?.attributes.code,
+        },
+        headers:{
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+
+    setDisplayCreateModal(false)
+  };
+
+  return(
+    <div className="form_wrapper">
+      <div className="field">
+        <label>Nom de la cagnotte</label>
+        <input onChange={(e) => setCagnotteName(e.target.value)} type="text" name="cagnotte_name" id="cagnotte_name" maxLength={15} required />
+      </div>
+      <div className="field">
+        <label>Objectif de la cagnotte</label>
+        <input onChange={(e) => setObjectif(Number(e.target.value))} type="number" name="objectif" id="objectif" />
+      </div>
+      <div className="form_buttons">
+        <a href="/" onClick={() => postNewActivity()}>
+          <Button name='Valider' />
+        </a>
+        <div onClick={() => setDisplayCreateModal(false)}>
+          <Button name='Annuler' />
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default Activity;

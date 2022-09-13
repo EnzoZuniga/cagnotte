@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import './App.css';
 
 import Button from '../../components/button/Button';
@@ -40,7 +40,7 @@ function App() {
   const sortActivities = () => {
     return setSortedActivities(activities?.filter((activity : IActivity) => user?.attributes.followed_activity.includes(activity.attributes.code)));
   }
-  
+
   if(openModal){
     return(
       <Activity setClose={setOpenModal} activityId={activityId}/>
@@ -80,7 +80,7 @@ function App() {
         {
           displayCreateModal === true ?(
           <div className='createModal'>
-            <CreatModal activities={activities} setDisplayCreateModal={setDisplayCreateModal} userId={user?.id} userCodes={user?.attributes.followed_activity}/>
+            <CreatModal activities={activities} setDisplayCreateModal={setDisplayCreateModal} userId={user?.id} userCodes={user?.attributes.followed_activity} setActivities={setActivities}/>
           </div>
           ) : null
         }
@@ -89,12 +89,11 @@ function App() {
   };  
 };
 
-const CreatModal = ({setDisplayCreateModal, activities, userId, userCodes} : {setDisplayCreateModal: any, activities?: IActivity[], userId?: number, userCodes?: number[]}) => {
+const CreatModal = ({setDisplayCreateModal, activities, userId, userCodes, setActivities} : {setDisplayCreateModal: any, activities?: IActivity[], userId?: number, userCodes?: number[], setActivities: any}) => {
 
   const [activityName, setActivityName] = useState<string>();
   const [cagnotteName, setCagnotteName] = useState<string>();
   const [objectif, setObjectif] = useState<number>();
-  const [code, setCode] = useState<number>();
 
   const getIntRandom = (max: number) => {
     return Math.floor(Math.random() * max);
@@ -132,7 +131,7 @@ const CreatModal = ({setDisplayCreateModal, activities, userId, userCodes} : {se
         data: {
           name: cagnotteName,
           totalDonation: 0,
-          goal: undefined,
+          goal: objectif,
           activity_code: randomInt,
         },
         headers:{
@@ -142,14 +141,14 @@ const CreatModal = ({setDisplayCreateModal, activities, userId, userCodes} : {se
 
       userCodes?.push(randomInt)
 
-      console.log("userCodes" ,userCodes)
-
       axios.put(`http://localhost:1337/api/participants/${userId}`, {
         data:{
           "followed_activity": userCodes
         }
       })
     }
+
+    setDisplayCreateModal(false)
   };
 
   return(
@@ -167,9 +166,9 @@ const CreatModal = ({setDisplayCreateModal, activities, userId, userCodes} : {se
         <input onChange={(e) => setObjectif(Number(e.target.value))} type="number" name="objectif" id="objectif" />
       </div>
       <div className="form_buttons">
-        <div onClick={() => postNewActivity()}>
+        <a href='/' onClick={() => postNewActivity()}>
           <Button name='Valider' />
-        </div>
+        </a>
         <div onClick={() => setDisplayCreateModal(false)}>
           <Button name='Annuler' />
         </div>
@@ -177,4 +176,5 @@ const CreatModal = ({setDisplayCreateModal, activities, userId, userCodes} : {se
     </div>
   )
 }
+
 export default App;

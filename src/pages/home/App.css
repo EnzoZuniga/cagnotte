@@ -58,6 +58,7 @@
 
 .form_buttons{
   display: flex;
+  align-items: center;
 }
 
 .form_buttons div{
