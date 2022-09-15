@@ -10,8 +10,9 @@ import "./activity.css";
 import IActivity from "../../interface/activity";
 import IPool from "../../interface/pool";
 import axios from "axios";
+import IUser from "../../interface/user";
 
-const Activity = ({setClose, activityId}:{setClose: any, activityId?: number}) => {
+const Activity = ({setClose, activityId, user}:{setClose: any, activityId?: number, user?: IUser}) => {
 
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [poolToPass, setPoolToPass] = useState<number>();
@@ -44,7 +45,7 @@ const Activity = ({setClose, activityId}:{setClose: any, activityId?: number}) =
 
   if(openModal){
     return(
-      <Pool activity={activity} setClose={setOpenModal} poolId={poolToPass}/>
+      <Pool activity={activity} setClose={setOpenModal} poolId={poolToPass} user={user}/>
     );
   }else{
     return(

@@ -7,7 +7,6 @@ interface INotification {
     name: string,
     lastname: string,
     open: boolean,
-    message: string,
     amount: number,
     activity_name: string,
     pool_name: string,

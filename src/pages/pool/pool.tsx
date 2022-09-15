@@ -8,13 +8,15 @@ import IPool from "../../interface/pool";
 import Row from "../../components/Row/row";
 import IDonation from "../../interface/donation";
 import axios from "axios";
+import IUser from "../../interface/user";
 
-const Pool = ({poolId, setClose, activity}: {poolId?: number, setClose: any, activity?: IActivity}) => {
+const Pool = ({poolId, setClose, activity, user}: {poolId?: number, setClose: any, activity?: IActivity, user?: IUser}) => {
 
   const [donations, setDonations] = useState<IDonation[]>();
   const [pool, setPool] = useState<IPool>();
   const [sortedDonations, setSortedDonations] = useState<IDonation[]>();
   const [total, setTotal] = useState<number>(0);
+  const [modalParticipation, setModalParticipation] = useState<boolean>();
 
   useEffect(() => {
     //Call pool with ID
@@ -43,7 +45,14 @@ const Pool = ({poolId, setClose, activity}: {poolId?: number, setClose: any, act
 
   //sort all donations by pool id
   const sortDonations = () => {
-    return setSortedDonations(donations?.filter((donations : IDonation) => pool?.id === donations.attributes.pool_id));
+
+    let sortDonations : IDonation[] = [];
+
+    donations?.map((donation: IDonation) => {
+      return donation.attributes.pool_id === poolId ? sortDonations.push(donation) : null;
+    })
+
+    return setSortedDonations(sortDonations)
   }
 
   return(
@@ -57,7 +66,12 @@ const Pool = ({poolId, setClose, activity}: {poolId?: number, setClose: any, act
             {activity?.attributes.name} - {pool?.attributes.name}
           </div>
         </div>
-        <Button name="télécharger"/>
+        <div>
+          <Button name="télécharger"/>
+        </div>
+        <div onClick={() => setModalParticipation(true)}>
+          <Button name="Participer"/>
+        </div>
       </div>
       <div className="numbers">
         <div className="padding total">
@@ -71,14 +85,91 @@ const Pool = ({poolId, setClose, activity}: {poolId?: number, setClose: any, act
       <div className="donations">
         <div className="table">
           {
-            donations?.map((donation: IDonation) => {
+            sortedDonations?.map((donation: IDonation) => {
               return (
-                <Row name={donation.attributes.giver_name} lastname={donation.attributes.giver_lastname} donation={donation.attributes.somme} />
+                <Row key={donation.id} name={donation.attributes.giver_name} lastname={donation.attributes.giver_lastname} donation={donation.attributes.somme} />
               )
             })
           }
         </div>
       </div>
+      {
+        modalParticipation ?(
+          <div className='createModal'>
+            <ModalParticipation setModalParticipation={setModalParticipation} user={user} pool={pool} activity={activity} />
+          </div>
+        ): null
+      }
+    </div>
+  )
+}
+
+const ModalParticipation = ({setModalParticipation, user, pool, activity}: {setModalParticipation: any, user?: IUser, pool?: IPool, activity?: IActivity}) => {
+
+  const [participation, setParticipation] = useState<number>();
+  const [showError, setShowError] = useState<boolean>();
+
+  const participationPost = () => {
+    if(participation !== (0 || undefined)){
+      axios.post('http://localhost:1337/api/donations', {
+        data: {
+          somme: participation,
+          giver_name: user?.attributes.name,
+          giver_lastname: user?.attributes.lastname,
+          pool_id: pool?.id,
+        },
+        headers:{
+          'Content-Type': 'application/json'
+        }
+      });
+
+      axios.put(`http://localhost:1337/api/pools/${pool?.id}`, {
+        data: {
+          totalDonation: pool?.attributes.totalDonation ? pool.attributes.totalDonation + participation : 0 + participation,
+        },
+        headers:{
+          'Content-Type': 'application/json'
+        }
+      });
+
+      axios.post('http://localhost:1337/api/notifications', {
+        data: {
+          name: user?.attributes.name,
+          lastname: user?.attributes.lastname,
+          open: false,
+          amount: participation,
+          activity_name: activity?.attributes.name,
+          pool_name: pool?.attributes.name,
+          user_id: activity?.attributes.admin,
+        },
+        headers:{
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+  }
+
+  return(
+    <div className='form_wrapper'>
+      <div className="field">
+        <label>Montant</label>
+        <input onChange={(e) => setParticipation(Number(e.target.value))} type="number" name="montant" id="montant" />
+      </div>
+      <div className="form_buttons">
+        <div onClick={() => participationPost()}>
+          <Button name='Valider' />
+        </div>
+        <div onClick={() => setModalParticipation(false)}>
+          <Button name='Annuler' />
+        </div>
+      </div>
+      {
+        showError ? (
+          <span>
+              Autre que 0
+          </span>
+        ) : null
+      }
     </div>
   )
 }

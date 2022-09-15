@@ -44,7 +44,7 @@ function App() {
 
   if(openModal){
     return(
-      <Activity setClose={setOpenModal} activityId={activityId}/>
+      <Activity setClose={setOpenModal} activityId={activityId} user={user} />
     );
   }else {
     return (
@@ -199,7 +199,7 @@ const CreatModal = ({setDisplayCreateModal, activities, userId, userCodes, setAc
         headers:{
           'Content-Type': 'application/json'
         }
-      });
+    });
 
       userCodes?.push(randomInt)
 
