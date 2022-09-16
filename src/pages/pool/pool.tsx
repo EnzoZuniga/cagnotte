@@ -21,6 +21,7 @@ const Pool = ({poolId, setClose, activity, user}: {poolId?: number, setClose?: a
   const [sortedDonations, setSortedDonations] = useState<IDonation[]>();
   const [total, setTotal] = useState<number>(0);
   const [modalParticipation, setModalParticipation] = useState<boolean>();
+  const [available, setAvailable] = useState<boolean>(false);
 
   useEffect(() => {
     //Call pool with ID
@@ -60,16 +61,21 @@ const Pool = ({poolId, setClose, activity, user}: {poolId?: number, setClose?: a
   }
 
   const downloadPDF = () => {
-    const input: HTMLElement = document.getElementById('divToPrint')!;
-    html2canvas(input)
-      .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF();
-        pdf.addImage(imgData, 'JPEG', 0, 0, 0, 0);
-        // pdf.output('dataurlnewwindow');
-        pdf.save(`${activity?.attributes.name}-${pool?.attributes.name}.pdf`);
-      })
-    ;
+    setAvailable(true)
+    const timerPDF = setTimeout(() => {
+      const input: HTMLElement = document.getElementById('divToPrint')!;
+      html2canvas(input)
+        .then((canvas) => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF();
+          pdf.addImage(imgData, 'JPEG', 0, 0, 0, 0);
+          // pdf.output('dataurlnewwindow');
+          pdf.save(`${activity?.attributes.name}-${pool?.attributes.name}.pdf`);
+        })
+      ;
+      setAvailable(false);
+    }, 1500);
+    return () => clearTimeout(timerPDF);
   }
 
   return(
@@ -110,9 +116,14 @@ const Pool = ({poolId, setClose, activity, user}: {poolId?: number, setClose?: a
           }
         </div>
       </div>
-      <div id="divToPrint" className="pdf">
-        <PoolPDF pool={pool} sortedDonations={sortedDonations} activity={activity} user={user} />
-      </div>
+      {
+        available ?
+        (
+          <div id="divToPrint" className="pdf">
+            <PoolPDF pool={pool} sortedDonations={sortedDonations} activity={activity} user={user} />
+          </div>
+        ): null
+      }
       {
         modalParticipation ?(
           <div className='createModal'>
