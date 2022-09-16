@@ -51,7 +51,7 @@ function App() {
       <div className="App">
         <div className="top-home">
           <div className="title">
-            Activité(s)
+            Pots Communs
           </div>
           <div className="buttons">
             <div onClick={() => setDisplayFollowModal(true)}>

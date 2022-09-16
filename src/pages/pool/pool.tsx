@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Button from "../../components/button/Button";
 
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
 import "./pool.css";
 
 import IActivity from "../../interface/activity";
@@ -9,8 +12,9 @@ import Row from "../../components/Row/row";
 import IDonation from "../../interface/donation";
 import axios from "axios";
 import IUser from "../../interface/user";
+import PoolPDF from "./poolPDF";
 
-const Pool = ({poolId, setClose, activity, user}: {poolId?: number, setClose: any, activity?: IActivity, user?: IUser}) => {
+const Pool = ({poolId, setClose, activity, user}: {poolId?: number, setClose?: any, activity?: IActivity, user?: IUser}) => {
 
   const [donations, setDonations] = useState<IDonation[]>();
   const [pool, setPool] = useState<IPool>();
@@ -55,6 +59,19 @@ const Pool = ({poolId, setClose, activity, user}: {poolId?: number, setClose: an
     return setSortedDonations(sortDonations)
   }
 
+  const downloadPDF = () => {
+    const input: HTMLElement = document.getElementById('divToPrint')!;
+    html2canvas(input)
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+        pdf.addImage(imgData, 'JPEG', 0, 0, 0, 0);
+        // pdf.output('dataurlnewwindow');
+        pdf.save(`${activity?.attributes.name}-${pool?.attributes.name}.pdf`);
+      })
+    ;
+  }
+
   return(
     <div className="pool">
       <div className="top-home">
@@ -66,7 +83,7 @@ const Pool = ({poolId, setClose, activity, user}: {poolId?: number, setClose: an
             {activity?.attributes.name} - {pool?.attributes.name}
           </div>
         </div>
-        <div>
+        <div onClick={() => downloadPDF()}>
           <Button name="télécharger"/>
         </div>
         <div onClick={() => setModalParticipation(true)}>
@@ -92,6 +109,9 @@ const Pool = ({poolId, setClose, activity, user}: {poolId?: number, setClose: an
             })
           }
         </div>
+      </div>
+      <div id="divToPrint" className="pdf">
+        <PoolPDF pool={pool} sortedDonations={sortedDonations} activity={activity} user={user} />
       </div>
       {
         modalParticipation ?(
@@ -122,7 +142,6 @@ const ModalParticipation = ({setModalParticipation, user, pool, activity}: {setM
           'Content-Type': 'application/json'
         }
       });
-
       axios.put(`http://localhost:1337/api/pools/${pool?.id}`, {
         data: {
           totalDonation: pool?.attributes.totalDonation ? pool.attributes.totalDonation + participation : 0 + participation,
@@ -131,7 +150,6 @@ const ModalParticipation = ({setModalParticipation, user, pool, activity}: {setM
           'Content-Type': 'application/json'
         }
       });
-
       axios.post('http://localhost:1337/api/notifications', {
         data: {
           name: user?.attributes.name,
@@ -146,6 +164,9 @@ const ModalParticipation = ({setModalParticipation, user, pool, activity}: {setM
           'Content-Type': 'application/json'
         }
       });
+      return window.location.href='';  
+    }else{
+      setShowError(true)
     }
   }
 

@@ -32,3 +32,70 @@
   display: grid;
   justify-items: center;
 }
+
+.pdf-top-home{
+  height: 1px;
+}
+
+.pdf-pool{
+  height: 60vw;
+  width: 44vw;
+  display: grid;
+}
+
+.pdf-title{
+  font-size: 3vw;
+  color: #FFD24C;
+  font-weight: bold;
+  text-align: center;
+}
+
+.pdf-numbers{
+  margin-top: -10vw;
+  height: 1px;
+}
+
+.pdf-total{
+  color: #92B4EC;
+  font-size: 4vw;
+  font-weight: bold;
+}
+
+.pdf-padding{
+  text-align: center;
+  margin-bottom: 1vw;
+}
+
+.pdf-separator{
+  height: 1px;
+  background-color: #FFD24C;
+  width: 100%;
+  padding: none;
+}
+
+.pdf-donations{
+  font-size: 1vw;
+}
+
+.pdf-table{
+  display: grid;
+  justify-items: center;
+}
+
+.pdf-row{
+  background-color: #FFE69A;
+  display: flex;
+  width: 20vw;
+  padding: 1vw 2vw;
+  border-bottom: solid 1px;
+  font-size: 1vw;
+  justify-content: space-between;
+}
+
+.pdf-row:last-child{
+  border-bottom: none;
+}
+
+.pdf-user{
+  margin-right: 2vw;
+}

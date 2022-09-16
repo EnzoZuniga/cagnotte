@@ -12,7 +12,7 @@ import IPool from "../../interface/pool";
 import axios from "axios";
 import IUser from "../../interface/user";
 
-const Activity = ({setClose, activityId, user}:{setClose: any, activityId?: number, user?: IUser}) => {
+const Activity = ({setClose, activityId, user}:{setClose?: any, activityId?: number, user?: IUser}) => {
 
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [poolToPass, setPoolToPass] = useState<number>();
@@ -56,7 +56,7 @@ const Activity = ({setClose, activityId, user}:{setClose: any, activityId?: numb
               <Button name="<"/>
             </div>
             <div className="title">
-              {activity?.attributes.name} - #{activity?.attributes.code}
+              Activité(s): {activity?.attributes.name} - #{activity?.attributes.code}
             </div>
             <div className="avatarActivity">
               {

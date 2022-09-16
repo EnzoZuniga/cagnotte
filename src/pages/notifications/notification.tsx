@@ -32,18 +32,14 @@ const Notification = () => {
 
 
   const setOpenNotification = (notification: INotification) => {
-    console.log("passe3")
-    let notificationToPut = {
+    axios.put(`http://localhost:1337/api/notifications/${notification.id}`, {
       data:{
         open: true,
       }
-    };
-    console.log(notificationToPut)
-    axios.put(`http://localhost:1337/api/notifications/${notification.id}`, notificationToPut);
+    });
   };
   
   const openNotification = () => {
-    console.log("passe2")
     sortedNotifications?.map((notification : INotification) => {
       return setOpenNotification(notification)
     })
@@ -51,7 +47,6 @@ const Notification = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
         openNotification();
-        console.log("passe")
     }, 1500);
     return () => clearTimeout(timer);
   }, []);
