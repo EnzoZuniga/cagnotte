@@ -155,7 +155,7 @@ const ModalParticipation = ({setModalParticipation, user, pool, activity}: {setM
       });
       axios.put(`http://localhost:1337/api/pools/${pool?.id}`, {
         data: {
-          totalDonation: pool?.attributes.totalDonation ? pool.attributes.totalDonation + participation : 0 + participation,
+          totalDonation: pool?.attributes.totalDonation !== (0 || undefined) ? pool.attributes.totalDonation + participation : participation,
         },
         headers:{
           'Content-Type': 'application/json'
@@ -175,7 +175,10 @@ const ModalParticipation = ({setModalParticipation, user, pool, activity}: {setM
           'Content-Type': 'application/json'
         }
       });
-      return window.location.href='';  
+      const timer = setTimeout(() => {
+        window.location.href='';
+      }, 1500)
+      return () => clearTimeout(timer);
     }else{
       setShowError(true)
     }

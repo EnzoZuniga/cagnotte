@@ -30,26 +30,15 @@ const Notification = () => {
 
   }, [notifications, user])
 
-
-  const setOpenNotification = (notification: INotification) => {
-    axios.put(`http://localhost:1337/api/notifications/${notification.id}`, {
-      data:{
-        open: true,
-      }
-    });
-  };
-  
-  const openNotification = () => {
-    sortedNotifications?.map((notification : INotification) => {
-      return setOpenNotification(notification)
-    })
-  }
   useEffect(() => {
-    const timer = setTimeout(() => {
-        openNotification();
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
+    sortedNotifications?.map((notification : INotification) => {
+      axios.put(`http://localhost:1337/api/notifications/${notification.id}`, {
+        data:{
+          open: true,
+        }
+      });
+    })
+  }, [sortedNotifications]);
 
   return(
     <div className="App">
