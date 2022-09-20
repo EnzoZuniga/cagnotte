@@ -60,7 +60,7 @@ const Activity = ({setClose, activityId, user}:{setClose?: any, activityId?: num
             </div>
             <div className="avatarActivity">
               {
-                activity?.attributes.admin ? <img src={avatarImg} alt="avatar"/> : null
+                activity?.attributes.admin === user?.id ? <img src={avatarImg} alt="avatar"/> : null
               }
             </div>
           </div>

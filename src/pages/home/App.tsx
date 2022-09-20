@@ -22,12 +22,16 @@ function App() {
   const [displayFollowModal, setDisplayFollowModal] = useState<boolean>(false);
   
   useEffect(() => {
+
+    console.log(localStorage.getItem('userid'))
     //fetch all activities with actual user
     if (!user){
-      axios.get('http://localhost:1337/api/participants/1').then(response => {
+      axios.get(`http://localhost:1337/api/participants/${localStorage.getItem('userid')}`).then(response => {
         setUser(response.data.data);
       });
     };
+
+    console.log(user)
 
     if(!activities){
       axios.get('http://localhost:1337/api/activities').then(response => {
@@ -70,7 +74,7 @@ function App() {
                   <Card
                     type="activity"
                     name={activity.attributes?.name || ""}
-                    avatar={true}
+                    avatar={user?.id === activity.attributes.admin ? true : false}
                     setOpen={setOpenModal}
                   />
                 </div>
@@ -110,7 +114,7 @@ const FollowModal = ({setDisplayFollowModal, userCodes, userId, activities}: {se
       
       if(arrayActivities?.includes(true)){ 
         if(userCodes?.includes(codeActivite)){
-          return window.location.href=''
+          return window.location.href='/home'
         }else{
           userCodes?.push(codeActivite);
           axios.put(`http://localhost:1337/api/participants/${userId}`, {
@@ -118,7 +122,7 @@ const FollowModal = ({setDisplayFollowModal, userCodes, userId, activities}: {se
               "followed_activity": userCodes
             }
           })
-          return window.location.href='';
+          return window.location.href='/home';
         }
       }else{
         setShowError(true);

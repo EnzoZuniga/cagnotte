@@ -176,7 +176,7 @@ const ModalParticipation = ({setModalParticipation, user, pool, activity}: {setM
         }
       });
       const timer = setTimeout(() => {
-        window.location.href='';
+        window.location.href='/home';
       }, 1500)
       return () => clearTimeout(timer);
     }else{

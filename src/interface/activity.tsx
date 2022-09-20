@@ -8,7 +8,7 @@ interface IActivity {
   attributes: {
     code: number,
     name: string,
-    admin: boolean,
+    admin: number,
   }
 };
 

@@ -41,14 +41,15 @@
 
 .nav{
   display: flex;
-  justify-content: center;
-  align-items: center;
   font-weight: bold;
+  flex-direction: column;
+  padding: 1vw;
 }
 
 .nav a{
   text-decoration: none;
   color: white;
+  margin-bottom: 3vw;
 }
 
 .nav a:hover{

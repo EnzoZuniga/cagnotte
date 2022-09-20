@@ -12,7 +12,7 @@ const Navigation = () => {
 
   useEffect(() => {
     if (!user){
-      axios.get('http://localhost:1337/api/participants/1').then(response => {
+      axios.get(`http://localhost:1337/api/participants/${localStorage.getItem('userid')}`).then(response => {
         setUser(response.data.data);
       });
     };
@@ -36,8 +36,11 @@ const Navigation = () => {
         </div>
       </div>
       <div className="nav">
-        <a href="/" >
+        <a href="/home" >
           Home
+        </a>
+        <a href="/" >
+          Déconnexion
         </a>
       </div>
     </div>

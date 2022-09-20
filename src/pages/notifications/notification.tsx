@@ -14,7 +14,7 @@ const Notification = () => {
 
   useEffect(() => {
     if (!user){
-      axios.get('http://localhost:1337/api/participants/1').then(response => {
+      axios.get(`http://localhost:1337/api/participants/${localStorage.getItem('userid')}`).then(response => {
         setUser(response.data.data);
       });
     };
