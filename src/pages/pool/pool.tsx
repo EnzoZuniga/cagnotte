@@ -22,6 +22,7 @@ const Pool = ({poolId, setClose, activity, user}: {poolId?: number, setClose?: a
   const [total, setTotal] = useState<number>(0);
   const [modalParticipation, setModalParticipation] = useState<boolean>();
   const [available, setAvailable] = useState<boolean>(false);
+  const [modalRepartition, setModalRepartition] = useState<boolean>(false);
 
   useEffect(() => {
     //Call pool with ID
@@ -105,6 +106,9 @@ const Pool = ({poolId, setClose, activity, user}: {poolId?: number, setClose?: a
         </div>
         <div className="separator"/>
       </div>
+      <div onClick={() => setModalRepartition(true)} className="wrapper-repartition">
+        <Button name="répartition"/>
+      </div>
       <div className="donations">
         <div className="table">
           {
@@ -128,6 +132,13 @@ const Pool = ({poolId, setClose, activity, user}: {poolId?: number, setClose?: a
         modalParticipation ?(
           <div className='createModal'>
             <ModalParticipation setModalParticipation={setModalParticipation} user={user} pool={pool} activity={activity} />
+          </div>
+        ): null
+      }
+      {
+        modalRepartition ?(
+          <div className="createModal">
+            <ModalRepartition donations={ sortedDonations } pool={ pool } setModalRepartition={setModalRepartition} user={user} />
           </div>
         ): null
       }
@@ -207,6 +218,108 @@ const ModalParticipation = ({setModalParticipation, user, pool, activity}: {setM
       }
     </div>
   )
+}
+
+const ModalRepartition = ({donations, pool, setModalRepartition, user}:{donations?: IDonation[], pool?: IPool, setModalRepartition?:any, user?:IUser}) => {
+
+  const [reste, setReste] = useState<number>(0);
+  const [percentDonations, setPercentDonations] = useState<[]>();
+  const [switchDiv, setSwitchDiv] = useState<boolean>();
+
+  const doRepartition = () => {
+    if(reste !== 0)
+    {
+      let arrayPer: any = [];
+      donations?.map((donation: IDonation) => {
+        let percent = (donation.attributes.somme * 100)/pool?.attributes.totalDonation!;
+        arrayPer.push({
+          name: donation.attributes.giver_name,
+          amount: ((percent/100)*reste).toFixed(2),
+        })
+      });
+      setPercentDonations(arrayPer);
+      setSwitchDiv(true)
+    }
+  }
+
+  if(switchDiv){
+    return (
+      <div className='form_wrapper'>
+        <div className="wrapper-title-rep">
+          <span className="title-resume">Résumer des donnations</span>
+        </div>
+        <div className="repartition-wrapper">
+          <div className="table">
+            {
+              percentDonations?.map((donationPer: any) => {
+                return (
+                  <div key={donationPer.name} className="rep-row">
+                    <div className="rep-user">
+                      {donationPer.name}
+                    </div>
+                    <div className="rep-donation">
+                      {donationPer.amount}€
+                    </div>
+                  </div>
+                )
+              })
+            }
+          </div>
+        </div>
+        <div className="field">
+          <label>Reste de la cagnotte</label>
+          <input onChange={(e) => setReste(Number(e.target.value))} type="number" name="montant" id="montant" />
+        </div>
+        <div className="form_buttons">
+          <div onClick={() => doRepartition()}>
+            <Button name='Valider' />
+          </div>
+          <div onClick={() => setModalRepartition(false)}>
+            <Button name='Sortir' />
+          </div>
+        </div>
+      </div>
+    )
+  }else{
+    return(
+      <div className='form_wrapper'>
+        <div className="wrapper-title-rep">
+          <span className="title-resume">Résumer des donnations</span>
+        </div>
+        <div className="repartition-wrapper">
+          <div className="table">
+            {
+              donations?.map((donation: IDonation) => {
+                return (
+                  <div key={donation.id} className="rep-row">
+                    <div className="rep-user">
+                      {user?.attributes.name} {user?.attributes.lastname}
+                    </div>
+                    <div className="rep-donation">
+                      {donation.attributes.somme}€
+                    </div>
+                  </div>
+                )
+              })
+            }
+          </div>
+        </div>
+        <div className="field">
+          <label>Reste de la cagnotte</label>
+          <input onChange={(e) => setReste(Number(e.target.value))} type="number" name="montant" id="montant" />
+        </div>
+        <div className="form_buttons">
+          <div onClick={() => doRepartition()}>
+            <Button name='Valider' />
+          </div>
+          <div onClick={() => setModalRepartition(false)}>
+            <Button name='Annuler' />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
 }
 
 export default Pool;

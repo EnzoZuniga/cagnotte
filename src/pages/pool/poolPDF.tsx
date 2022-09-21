@@ -1,5 +1,4 @@
 import React from "react";
-import Row from "../../components/Row/row";
 import IActivity from "../../interface/activity";
 import IDonation from "../../interface/donation";
 import IPool from "../../interface/pool";

@@ -1,7 +1,7 @@
 .pool{
   height: 100vh;
   display: grid;
-  grid-template-rows: 15% 30% 55%;
+  grid-template-rows: 15% 20% 10% 55%;
 }
 
 .numbers{
@@ -26,7 +26,17 @@
   padding: none;
 }
 
-.donations{}
+.wrapper-repartition{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.donations{
+  max-height: 35vw;
+  overflow: scroll;
+  margin-bottom: 2vw;
+}
 
 .table{
   display: grid;
@@ -101,4 +111,42 @@
 
 .pdf-user{
   margin-right: 2vw;
+}
+
+.wrapper-title-rep{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1vw;
+}
+
+.title-resume{
+  color: white;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.repartition-wrapper{
+  max-height: 20vw;
+  overflow: scroll;
+  margin-bottom: 2vw;
+}
+
+.rep-row{
+  background-color: white;
+  display: flex;
+  min-width: 20vw;
+  padding: 1vw 2vw;
+  border-bottom: solid 1px #FFD24C;
+  border-radius: 5px;
+  font-size: 1.5vw;
+  justify-content: space-between;
+}
+
+.rep-user{
+  margin-right: 2vw;
+}
+
+.rep-row:last-child{
+  border-bottom: none;
 }

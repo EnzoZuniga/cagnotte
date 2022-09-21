@@ -232,7 +232,7 @@ const CreatModal = ({setDisplayCreateModal, activities, userId, userCodes, setAc
         <input onChange={(e) => setObjectif(Number(e.target.value))} type="number" name="objectif" id="objectif" />
       </div>
       <div className="form_buttons">
-        <a href='/' onClick={() => postNewActivity()}>
+        <a href='/home' onClick={() => postNewActivity()}>
           <Button name='Valider' />
         </a>
         <div onClick={() => setDisplayCreateModal(false)}>
