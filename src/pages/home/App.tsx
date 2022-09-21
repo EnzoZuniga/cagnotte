@@ -1,15 +1,14 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 
 import Button from '../../components/button/Button';
 import Card from '../../components/card/Card';
 
-import Activity from '../activity/activity';
+import axios from 'axios';
 import IActivity from '../../interface/activity';
 import IUser from '../../interface/user';
-import axios from 'axios';
+import Activity from '../activity/activity';
 
-import process from 'process';
 
 function App() {
 
@@ -106,16 +105,24 @@ const FollowModal = ({setDisplayFollowModal, userCodes, userId, activities}: {se
   const [codeActivite, setCodeActivite] = useState<number>();
   const [showError, setShowError] = useState<boolean>();
 
+  //suivre une activity
   const followCode = () => {
-    if(codeActivite !== (0 || undefined)){
+    //si le code entrer n'est pas indéfini 
+    if(codeActivite !== (undefined)){
+      //Création d'un tableau binaire pour chercher si un des code correspond à codeActivite
       const arrayActivities = activities?.map((activity: IActivity) => {
          return activity.attributes.code === codeActivite ? true : false
       });
       
+      //Si il y à un seul "true" dans le tableau
       if(arrayActivities?.includes(true)){ 
+        //Si l'utilisateur suit déjà l'activité il retourne à l'acceuil
         if(userCodes?.includes(codeActivite)){
           return window.location.href='/home'
         }else{
+          //Sinon il ajoute le code dans le tableau de code de l'objet "participant" (utilisateur)
+          //et ensuite l'envoie à la BDD avec une requêtes PUT
+          //L'utilisateur est redirigé vers la page d'acceuil
           userCodes?.push(codeActivite);
           axios.put(`http://localhost:1337/api/participants/${userId}`, {
             data:{
@@ -125,8 +132,13 @@ const FollowModal = ({setDisplayFollowModal, userCodes, userId, activities}: {se
           return window.location.href='/home';
         }
       }else{
+        //Si il n'y a pas de "true" dans le tableau alors il n'y a pas de code correspondant
+        //Un message d'erreur s'affiche
         setShowError(true);
       }
+    }else{
+      //Le code entrer est indéfini donc un message d'erreur apparait
+      setShowError(true);
     }
   }
 
@@ -157,31 +169,36 @@ const FollowModal = ({setDisplayFollowModal, userCodes, userId, activities}: {se
 
 const CreatModal = ({setDisplayCreateModal, activities, userId, userCodes, setActivities} : {setDisplayCreateModal: any, activities?: IActivity[], userId?: number, userCodes?: number[], setActivities: any}) => {
 
-  const [activityName, setActivityName] = useState<string>();
-  const [cagnotteName, setCagnotteName] = useState<string>();
-  const [objectif, setObjectif] = useState<number>();
+  const [activityName, setActivityName] = useState<string>("");
+  const [cagnotteName, setCagnotteName] = useState<string>("");
+  const [objectif, setObjectif] = useState<number>(0);
+  const [showError, setShowError] = useState<boolean>();
 
   const getIntRandom = (max: number) => {
     return Math.floor(Math.random() * max);
   }
 
+  //Création d'un nouveau pot commun
   const postNewActivity = () => {
+    //Les champs entrer dans le formulaire ne doivent pas être des chaînes de caractères vides
     if(
-      (activityName !== (null || ""))
-      && (cagnotteName !== (null || ""))
-      && (objectif !== (null || 0))
+      (activityName !== (""))
+      && (cagnotteName !== (""))
     ) {
-      
+      //Déclaration d'un tableau de nombre
       let activityCodeArray: number[] = [];
+      //Déclaration d'un nombre aléatoire jusqu'a 9999
       let randomInt = getIntRandom(9999)
+      //Remplissage du tableau de nombre par les codes des pots communs
       activities?.map((activity: IActivity) => {
         activityCodeArray.push(activity.attributes.code)
       })
-      
+      //Si le nombre aléatoire correspond déjà à un code dans le tableau de code, alors on ajoute 1
+      //jusqu'à ce qu'il soit différent des codes existants
       while(activityCodeArray.includes(randomInt)){
         randomInt++;
       }
-      
+      //Création d'un nouveau pot commun avec une requête POST
       axios.post('http://localhost:1337/api/activities', {
         data:{
           code: randomInt,
@@ -192,7 +209,7 @@ const CreatModal = ({setDisplayCreateModal, activities, userId, userCodes, setAc
           'Content-Type': 'application/json'
         }
       });
-
+      //Crétation d'une nouvelle cagnotte avec une requête POST
       axios.post('http://localhost:1337/api/pools', {
         data: {
           name: cagnotteName,
@@ -203,18 +220,23 @@ const CreatModal = ({setDisplayCreateModal, activities, userId, userCodes, setAc
         headers:{
           'Content-Type': 'application/json'
         }
-    });
-
+      });
+      //Pousser le nombre aléatoire dans le tableau des codes de l'utilisateur "userCodes"
       userCodes?.push(randomInt)
-
+      //Pousser le tableau "userCodes" par requête PUT dans l'objet "participant" (utilisateur) en BDD
       axios.put(`http://localhost:1337/api/participants/${userId}`, {
         data:{
           "followed_activity": userCodes
         }
-      })
+      });
+      //Ferme la modal
+      setDisplayCreateModal(false)
+      //Redirige vers l'acceuil
+      window.location.href="/home"
+    }else{
+      //Un des deux champs de formulaire est vide donc un message d'erreur s'affiche
+      setShowError(true);
     }
-
-    setDisplayCreateModal(false)
   };
 
   return(
@@ -232,13 +254,24 @@ const CreatModal = ({setDisplayCreateModal, activities, userId, userCodes, setAc
         <input onChange={(e) => setObjectif(Number(e.target.value))} type="number" name="objectif" id="objectif" />
       </div>
       <div className="form_buttons">
-        <a href='/home' onClick={() => postNewActivity()}>
+        <div onClick={() => postNewActivity()}>
           <Button name='Valider' />
-        </a>
-        <div onClick={() => setDisplayCreateModal(false)}>
+        </div>
+        <div onClick={() => {
+            setShowError(false)
+            setDisplayCreateModal(false)
+            }
+          }>
           <Button name='Annuler' />
         </div>
       </div>
+      {
+        showError?(
+          <div>
+            <p>Il manque des champs</p>
+          </div>
+        ): null
+      }
     </div>
   )
 }

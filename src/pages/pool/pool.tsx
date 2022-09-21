@@ -148,11 +148,14 @@ const Pool = ({poolId, setClose, activity, user}: {poolId?: number, setClose?: a
 
 const ModalParticipation = ({setModalParticipation, user, pool, activity}: {setModalParticipation: any, user?: IUser, pool?: IPool, activity?: IActivity}) => {
 
-  const [participation, setParticipation] = useState<number>();
+  const [participation, setParticipation] = useState<number>(0);
   const [showError, setShowError] = useState<boolean>();
 
+  //Participation à un pot
   const participationPost = () => {
-    if(participation !== (0 || undefined)){
+    //Le montant de la participation doit être différent de 0
+    if(participation !== (0)){
+      //POST sur l'entité "donation" en BDD pour créer une occurence
       axios.post('http://localhost:1337/api/donations', {
         data: {
           somme: participation,
@@ -164,6 +167,7 @@ const ModalParticipation = ({setModalParticipation, user, pool, activity}: {setM
           'Content-Type': 'application/json'
         }
       });
+      //PUT sur l'entité "pools/id" pour modifier une occurrence de cagnotte afin d'augmenter le valeur "totalDonation"
       axios.put(`http://localhost:1337/api/pools/${pool?.id}`, {
         data: {
           totalDonation: pool?.attributes.totalDonation !== (0 || undefined) ? pool.attributes.totalDonation + participation : participation,
@@ -172,6 +176,7 @@ const ModalParticipation = ({setModalParticipation, user, pool, activity}: {setM
           'Content-Type': 'application/json'
         }
       });
+      //POST sur l'entité "notification" pour créer une notification pour l'administrateur de l'activité
       axios.post('http://localhost:1337/api/notifications', {
         data: {
           name: user?.attributes.name,
@@ -186,11 +191,13 @@ const ModalParticipation = ({setModalParticipation, user, pool, activity}: {setM
           'Content-Type': 'application/json'
         }
       });
+      //Après 1 seconde et demi, l'utilisateur est redirigé vers l'acceuil
       const timer = setTimeout(() => {
         window.location.href='/home';
       }, 1500)
       return () => clearTimeout(timer);
     }else{
+      //Si le donation = 0 alors une erreur s'affichec
       setShowError(true)
     }
   }
@@ -226,18 +233,25 @@ const ModalRepartition = ({donations, pool, setModalRepartition, user}:{donation
   const [percentDonations, setPercentDonations] = useState<[]>();
   const [switchDiv, setSwitchDiv] = useState<boolean>();
 
+  //Répartition des ressources
   const doRepartition = () => {
+    //Le reste ne doit pas être égale à 0
     if(reste !== 0)
     {
+      //Déclare un array vide non typer
       let arrayPer: any = [];
       donations?.map((donation: IDonation) => {
+        //fait le pourcentage de chaque donation
         let percent = (donation.attributes.somme * 100)/pool?.attributes.totalDonation!;
+        //pousse le poucentage et le prénom de la personne qui à donner dans le tableau déclarer ci-dessus
         arrayPer.push({
           name: donation.attributes.giver_name,
           amount: ((percent/100)*reste).toFixed(2),
         })
       });
+      //remplace le tableau déclarer ligne 233 par "arrayPer"
       setPercentDonations(arrayPer);
+      //affiche le nouveau tableau dans la modal
       setSwitchDiv(true)
     }
   }
@@ -246,7 +260,7 @@ const ModalRepartition = ({donations, pool, setModalRepartition, user}:{donation
     return (
       <div className='form_wrapper'>
         <div className="wrapper-title-rep">
-          <span className="title-resume">Résumer des donnations</span>
+          <span className="title-resume">Résumer des répartitions</span>
         </div>
         <div className="repartition-wrapper">
           <div className="table">

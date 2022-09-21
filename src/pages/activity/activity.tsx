@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../components/button/Button";
 import Card from "../../components/card/Card";
 import Pool from "../pool/pool";
@@ -7,9 +7,9 @@ import avatarImg from "./../../assets/avatar.png";
 
 import "./activity.css";
 
+import axios from "axios";
 import IActivity from "../../interface/activity";
 import IPool from "../../interface/pool";
-import axios from "axios";
 import IUser from "../../interface/user";
 
 const Activity = ({setClose, activityId, user}:{setClose?: any, activityId?: number, user?: IUser}) => {
@@ -104,14 +104,17 @@ const Activity = ({setClose, activityId, user}:{setClose?: any, activityId?: num
 
 const CreatModal = ({setDisplayCreateModal, activity} : {setDisplayCreateModal: any, activity?: IActivity}) => {
 
-  const [cagnotteName, setCagnotteName] = useState<string>();
+  const [cagnotteName, setCagnotteName] = useState<string>("");
   const [objectif, setObjectif] = useState<number>();
+  const [showError, setShowError] = useState<boolean>();
 
-  const postNewActivity = () => {
+  //Création d'une nouvelle cagnotte
+  const postNewPool = () => {
+    //La variable "cagnotteName" ne doit pas être vide 
     if(
-      (cagnotteName !== (null || ""))
-      && (objectif !== (null || 0))
+      (cagnotteName !== "")
     ) {
+      //Requête POST pour créer une cagnotte
       axios.post('http://localhost:1337/api/pools', {
         data: {
           name: cagnotteName,
@@ -123,9 +126,15 @@ const CreatModal = ({setDisplayCreateModal, activity} : {setDisplayCreateModal: 
           'Content-Type': 'application/json'
         }
       });
+      //Fermeture de la modal
+      setDisplayCreateModal(false)
+      //Redirection vers l'acceuil
+      window.location.href="/home"
+    }else{
+      //Si la variable est vide un message d'erreur apprait
+      setShowError(true);
     }
 
-    setDisplayCreateModal(false)
   };
 
   return(
@@ -139,13 +148,20 @@ const CreatModal = ({setDisplayCreateModal, activity} : {setDisplayCreateModal: 
         <input onChange={(e) => setObjectif(Number(e.target.value))} type="number" name="objectif" id="objectif" />
       </div>
       <div className="form_buttons">
-        <a href="/" onClick={() => postNewActivity()}>
+        <div onClick={() => postNewPool()}>
           <Button name='Valider' />
-        </a>
+        </div>
         <div onClick={() => setDisplayCreateModal(false)}>
           <Button name='Annuler' />
         </div>
       </div>
+      {
+        showError?(
+          <div>
+            Il y a une erreur
+          </div>
+        ): null
+      }
     </div>
   )
 }
